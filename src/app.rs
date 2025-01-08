@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use color_eyre::{owo_colors::OwoColorize, Result};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
@@ -11,6 +13,9 @@ use ratatui::{
 pub struct App {
     /// Is the application running?
     running: bool,
+
+    // project name mapped to location
+    projects: HashMap<String, String>,
 }
 
 impl App {
@@ -18,6 +23,8 @@ impl App {
     pub fn new() -> Self {
         Self::default()
     }
+
+    pub fn load_saved_projects(file_name: &str) {}
 
     /// Run the application's main loop.
     pub fn run(mut self, mut terminal: DefaultTerminal) -> Result<()> {
@@ -35,11 +42,12 @@ impl App {
     /// - <https://docs.rs/ratatui/latest/ratatui/widgets/index.html>
     /// - <https://github.com/ratatui/ratatui/tree/master/examples>
     fn draw(&mut self, frame: &mut Frame) {
-        self.draw_hello_world(frame);
+        self.draw_startup_page(frame);
     }
 
-    pub fn draw_hello_world(&self, frame: &mut Frame) {
+    fn draw_startup_page(&self, frame: &mut Frame) {
         let title = Line::from("Project Manager").blue().bold().centered();
+
         let text = "Hello, Ratatui!\n\n\
             Created using https://github.com/ratatui/templates\n\
             Press `Esc`, `Ctrl-C` or `q` to stop running.";
@@ -50,6 +58,10 @@ impl App {
             frame.area(),
         )
     }
+
+    fn draw_project_selection_page(&self, frame: &mut Frame) {}
+
+    fn draw_project_creation_page(&self, frame: &mut Frame) {}
 
     /// Reads the crossterm events and updates the state of [`App`].
     ///

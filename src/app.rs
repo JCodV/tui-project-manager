@@ -30,6 +30,9 @@ struct TodoList {
     progress: f32,
 }
 
+// can maybe have task modules which separates
+// related tasks into grouped categories for
+// better organization
 impl TodoList {
     pub fn new() -> Self {
         Self {
@@ -73,43 +76,50 @@ impl Project {
     }
 }
 
+#[derive(Debug)]
+enum AppState {
+    ProjectSelectionPage,
+    ProjectCreationPage,
+    SelectedProjectTodoList,
+    TaskCreationPage,
+}
+
+impl Default for AppState {
+    fn default() -> Self {
+        AppState::ProjectSelectionPage
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct App {
-    /// Is the application running?
-    running: bool,
-
-    // project name mapped to location
+    is_running: bool,
+    state: AppState,
     projects: Vec<Project>,
 }
 
 impl App {
-    /// Construct a new instance of [`App`].
     pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn load_saved_projects(file_name: &str) {}
-
-    /// Run the application's main loop.
     pub fn run(mut self, mut terminal: DefaultTerminal) -> Result<()> {
-        self.running = true;
-        while self.running {
+        self.is_running = true;
+        while self.is_running {
             terminal.draw(|frame| self.draw(frame))?;
             self.handle_crossterm_events()?;
         }
         Ok(())
     }
 
-    /// Renders the user interface.
-    ///
-    /// This is where you add new widgets. See the following resources for more information:
-    /// - <https://docs.rs/ratatui/latest/ratatui/widgets/index.html>
-    /// - <https://github.com/ratatui/ratatui/tree/master/examples>
+    fn load_saved_projects(file_name: &str) {}
+
+    fn save_projects(file_name: &str) {}
+
     fn draw(&mut self, frame: &mut Frame) {
-        self.draw_startup_page(frame);
+        self.draw_project_selection_page(frame);
     }
 
-    fn draw_startup_page(&self, frame: &mut Frame) {
+    fn draw_project_selection_page(&self, frame: &mut Frame) {
         let title = Line::from("Project Manager").blue().bold().centered();
 
         let text = "Hello, Ratatui!\n\n\
@@ -123,9 +133,11 @@ impl App {
         )
     }
 
-    fn draw_project_selection_page(&self, frame: &mut Frame) {}
+    fn draw_project_creation_popup(&self, frame: &mut Frame) {}
 
-    fn draw_project_creation_page(&self, frame: &mut Frame) {}
+    fn draw_selected_project_todo_list(&self, frame: &mut Frame) {}
+
+    fn draw_task_creation_popup(&self, frame: &mut Frame) {}
 
     /// Reads the crossterm events and updates the state of [`App`].
     ///
@@ -154,6 +166,6 @@ impl App {
 
     /// Set running to false to quit the application.
     fn quit(&mut self) {
-        self.running = false;
+        self.is_running = false;
     }
 }

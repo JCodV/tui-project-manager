@@ -1,7 +1,7 @@
-use color_eyre::Result;
+use color_eyre::{owo_colors::OwoColorize, Result};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
-    style::Stylize,
+    style::{Color, Style, Stylize},
     text::Line,
     widgets::{Block, Paragraph},
     DefaultTerminal, Frame,
@@ -35,10 +35,11 @@ impl App {
     /// - <https://docs.rs/ratatui/latest/ratatui/widgets/index.html>
     /// - <https://github.com/ratatui/ratatui/tree/master/examples>
     fn draw(&mut self, frame: &mut Frame) {
-        let title = Line::from("Ratatui Simple Template")
-            .bold()
-            .blue()
-            .centered();
+        self.draw_hello_world(frame);
+    }
+
+    pub fn draw_hello_world(&self, frame: &mut Frame) {
+        let title = Line::from("Project Manager").blue().bold().centered();
         let text = "Hello, Ratatui!\n\n\
             Created using https://github.com/ratatui/templates\n\
             Press `Esc`, `Ctrl-C` or `q` to stop running.";

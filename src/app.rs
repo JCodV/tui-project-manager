@@ -9,12 +9,57 @@ use ratatui::{
     DefaultTerminal, Frame,
 };
 
+#[derive(Debug, Default)]
+struct Task {
+    description: String,
+    is_complete: bool,
+}
+
+impl Task {
+    pub fn new(description: String) -> Self {
+        Self {
+            description,
+            is_complete: false,
+        }
+    }
+}
+
+#[derive(Debug, Default)]
+struct TodoList {
+    tasks: Vec<Task>,
+    progress: f32,
+}
+
+impl TodoList {
+    pub fn new() -> Self {
+        Self {
+            tasks: Vec::new(),
+            progress: 0.0,
+        }
+    }
+
+    fn calculate_progress(&self) -> f32 {
+        let total_tasks = self.tasks.len();
+        let mut completed_tasks = 0;
+
+        for task in self.tasks.iter() {
+            if task.is_complete {
+                completed_tasks += 1;
+            }
+        }
+
+        let percentage: f32 = (completed_tasks as f32 / total_tasks as f32) * 100.0;
+        return percentage;
+    }
+}
+
 #[derive(Debug)]
 struct Project {
     name: String,
     description: String,
     file_location: String,
-    // languages: Vec<String>,
+    todo_list: TodoList,
+    // languages: Vec<String>, // can probably just pull from github
 }
 
 impl Project {
@@ -23,6 +68,7 @@ impl Project {
             name,
             description,
             file_location,
+            todo_list: TodoList::new(),
         }
     }
 }

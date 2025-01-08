@@ -9,13 +9,31 @@ use ratatui::{
     DefaultTerminal, Frame,
 };
 
+#[derive(Debug)]
+struct Project {
+    name: String,
+    description: String,
+    file_location: String,
+    // languages: Vec<String>,
+}
+
+impl Project {
+    pub fn new(name: String, description: String, file_location: String) -> Self {
+        Self {
+            name,
+            description,
+            file_location,
+        }
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct App {
     /// Is the application running?
     running: bool,
 
     // project name mapped to location
-    projects: HashMap<String, String>,
+    projects: Vec<Project>,
 }
 
 impl App {

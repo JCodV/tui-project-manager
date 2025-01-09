@@ -1,10 +1,12 @@
+use std::default;
+
 use color_eyre::{owo_colors::OwoColorize, Result};
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
-    layout::Constraint,
+    layout::{Constraint, Direction, Layout},
     style::{Color, Style, Stylize},
     text::Line,
-    widgets::{Block, Paragraph, Row, Table},
+    widgets::{Block, Cell, Gauge, Paragraph, Row, Table},
     DefaultTerminal, Frame,
 };
 
@@ -116,7 +118,7 @@ impl App {
 
     fn draw(&mut self, frame: &mut Frame) {
         //self.draw_project_selection_page(frame);
-        self.draw_test(frame);
+        self.draw_table(frame);
     }
 
     fn draw_project_selection_page(&self, frame: &mut Frame) {
@@ -126,15 +128,6 @@ impl App {
             Created using https://github.com/ratatui/templates\n\
             Press `Esc`, `Ctrl-C` or `q` to stop running.";
 
-        let rows = [Row::new(vec!["hello", "this", "is", "a", "test"])];
-        let table_widths = [
-            Constraint::Length(5),
-            Constraint::Length(5),
-            Constraint::Length(10),
-        ];
-
-        let table = Table::new(rows, table_widths);
-
         frame.render_widget(
             Paragraph::new(text)
                 .block(Block::bordered().title(title))
@@ -143,38 +136,33 @@ impl App {
         );
     }
 
-    fn draw_test(&self, frame: &mut Frame) {
-        let rows = [Row::new(vec!["Cell1", "Cell2", "Cell3"])];
-        // Columns widths are constrained in the same way as Layout...
-        let widths = [
-            Constraint::Length(5),
-            Constraint::Length(5),
-            Constraint::Length(10),
-        ];
-        let table = Table::new(rows, widths)
-            // ...and they can be separated by a fixed spacing.
-            .column_spacing(1)
-            // You can set the style of the entire Table.
-            .style(Style::new().blue())
-            // It has an optional header, which is simply a Row always visible at the top.
-            .header(
-                Row::new(vec!["Col1", "Col2", "Col3"])
-                    .style(Style::new().bold())
-                    // To add space between the header and the rest of the rows, specify the margin
-                    .bottom_margin(1),
-            )
-            // It has an optional footer, which is simply a Row always visible at the bottom.
-            .footer(Row::new(vec!["Updated on Dec 28"]))
-            // As any other widget, a Table can be wrapped in a Block.
-            .block(Block::new().title("Table"))
-            // The selected row, column, cell and its content can also be styled.
-            .row_highlight_style(Style::new().reversed())
-            .column_highlight_style(Style::new().red())
-            .cell_highlight_style(Style::new().blue())
-            // ...and potentially show a symbol in front of the selection.
-            .highlight_symbol(">>");
+    fn draw_table(&self, frame: &mut Frame) {
+        let progress_bar = Gauge::default()
+            .block(Block::bordered().title("Progress"))
+            .percent(50);
 
-        frame.render_widget(table, frame.area());
+        let header = Row::new(vec!["this", "is", "DATA!"]);
+
+        let rows = [Row::new(vec![
+            Cell::from("this"),
+            Cell::from("is"),
+            Cell::from("SPARTA!!!"),
+        ])];
+
+        let table = Table::default().header(header).rows(rows);
+
+        let layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Length(3),
+                Constraint::Length(3),
+                Constraint::Length(3),
+            ])
+            .split(frame.area());
+
+        frame.render_widget(table, layout[0]);
+        frame.render_widget(progress_bar, layout[1]);
+        // frame.render_widget(progress_bar, frame.area());
     }
 
     fn draw_project_creation_popup(&self, frame: &mut Frame) {}
